@@ -30,7 +30,7 @@ Download the data here:
 
 
 ## Installation
-### Instrall directly from git
+### Install directly from git
 Use `pip` to install the `ember` and required files
 
 ```
