@@ -33,24 +33,43 @@ Download the data here:
 ### Install directly from git
 Use `pip` to install the `ember` and required files
 
-```
-pip install git+https://github.com/elastic/ember.git
+```bash
+pip install git+https://github.com/ScorpionAntimalware/ember.git
 ```
 
 This provides access to EMBER feature extaction for example.  However, to use the scripts to train the model, one would instead clone the repository.
 
 
 ### Install after cloning the EMBER repository
+
+
 Use `pip` or `conda` to install the required packages before installing `ember` itself:
 
-```
+ - Using `pip`:
+
+1. Install the dependencies:
+```bash
 pip install -r requirements.txt
+```
+
+2. Create the `ember` package:
+```bash
 python setup.py install
 ```
 
-```
+3. For Windows users, you will see two new directories created: `ember.egg-info/` and `dist/`. Move the `ember/` and `ember.egg-info/` directories as well as `dist/ember-0.1.0-py3.11.egg` file to the interpreter's `site-packages/` directory. For example, on Windows this is `C:\Users\username\AppData\Local\Programs\Python\Python311\Lib\site-packages\`.
+
+ - Using `conda`:
+
+```bash
 conda config --add channels conda-forge
+```
+
+```bash
 conda install --file requirements_conda.txt
+```
+
+```bash
 python setup.py install
 ```
 
@@ -64,13 +83,13 @@ EMBER will work with more recent releases of LIEF, but keep in mind that models 
 
 The `train_ember.py` script simplifies the model training process. It will vectorize the ember features if necessary and then train the LightGBM model.
 
-```
+```bash
 python train_ember.py [/path/to/dataset]
 ```
 
 The `classify_binaries.py` script will return model predictions on PE files.
 
-```
+```bash
 python classify_binaries.py -m [/path/to/model] BINARIES
 ```
 
@@ -78,7 +97,7 @@ python classify_binaries.py -m [/path/to/model] BINARIES
 
 The raw feature data can be expanded into vectorized form on disk for model training and into metadata form. These two functions create those extra files:
 
-```
+```python
 import ember
 ember.create_vectorized_features("/data/ember2018/")
 ember.create_metadata("/data/ember2018/")
@@ -86,7 +105,7 @@ ember.create_metadata("/data/ember2018/")
 
 Once created, that data can be read in using convenience functions:
 
-```
+```python
 import ember
 X_train, y_train, X_test, y_test = ember.read_vectorized_features("/data/ember2018/")
 metadata_dataframe = ember.read_metadata("/data/ember2018/")
@@ -94,7 +113,7 @@ metadata_dataframe = ember.read_metadata("/data/ember2018/")
 
 Once the data is downloaded and the ember module is installed, this simple code should reproduce the benchmark ember model:
 
-```
+```python
 import ember
 ember.create_vectorized_features("/data/ember2018/")
 lgbm_model = ember.train_model("/data/ember2018/")
@@ -102,7 +121,7 @@ lgbm_model = ember.train_model("/data/ember2018/")
 
 Once the model is trained, the ember module can be used to make a prediction on any input PE file:
 
-```
+```python
 import ember
 import lightgbm as lgb
 lgbm_model = lgb.Booster(model_file="/data/ember2018/ember_model_2018.txt")
