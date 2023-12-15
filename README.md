@@ -149,3 +149,7 @@ H. Anderson and P. Roth, "EMBER: An Open Dataset for Training Static PE Malware 
   adsurl = {http://adsabs.harvard.edu/abs/2018arXiv180404637A},
 }
 ```
+
+# Other Resources
+
+1. [camlis-ember-improvements](https://github.com/mrphilroth/camlis-ember-improvements) repository.
