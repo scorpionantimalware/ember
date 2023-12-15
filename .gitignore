@@ -26,6 +26,7 @@
 !/scripts/init_ember.py
 
 !/Dockerfile
+!/INFO.md
 !/LICENSE.txt
 !/README.md
 !/requirements_conda.txt
