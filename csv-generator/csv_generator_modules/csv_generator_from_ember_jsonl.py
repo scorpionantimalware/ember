@@ -23,7 +23,7 @@ class CSVGeneratorFromEmberJSONL:
 
         self._features = features
 
-    def extract_and_generate(self, file_path) -> None:
+    def extract_and_generate(self, file_path):
         """
         Extract the features from the JSON object and generate a CSV file.
 
@@ -31,7 +31,7 @@ class CSVGeneratorFromEmberJSONL:
         file_path (str): Path to the JSONL file.
         """
         if not self.check_file_path(file_path):
-            print("File not found")
+            print(f"File {file_path} not found.")
             return
         
         csv_file_path = os.path.splitext(file_path)[0] + '.csv'
@@ -48,12 +48,14 @@ class CSVGeneratorFromEmberJSONL:
 
             # Read the JSONL file and write the features to the CSV file
             with open(file_path, 'r') as file:
+                i = 0
                 for line in file:
                     json_data: dict = None
                     try:
                         json_data = json.loads(line)
                     except json.JSONDecodeError as e:
                         print(e.msg())
+                        os.remove(csv_file_path)
                         exit()
 
                     data = {}
@@ -83,16 +85,22 @@ class CSVGeneratorFromEmberJSONL:
                             value = self._search_and_get(json_data, feature)
 
                         if value is None:
-                            print(f"Feature {feature} not found in the JSON object")
+                            print(f"Feature '{feature}' not found in the JSON object.")
+                            os.remove(csv_file_path)
                             exit()
 
                         if isinstance(value, dict) or isinstance(value, list):
-                            print(f"Feature {feature} is a complex object")
+                            print(f"Feature '{feature}' is a complex object.")
+                            os.remove(csv_file_path)
                             exit()
 
                         data[feature] = value
 
                     writer.writerow(data)
+                
+                    i+=1
+                    if i % 10000 == 0:
+                        print(f"[{i}] lines processed for {file_path}")
 
     def check_file_path(self, file_path) -> bool:
         """
@@ -151,6 +159,9 @@ class CSVGeneratorFromEmberJSONL:
         if sections is None:
             print("Sections not found in the JSON object")
             exit()
+
+        if len(sections) == 0:
+            return 0.0
 
         entropy_sum = 0
         feature = "entropy"
@@ -239,6 +250,9 @@ class CSVGeneratorFromEmberJSONL:
             print("Sections not found in the JSON object")
             exit()
 
+        if len(sections) == 0:
+            return 0.0
+
         raw_size_sum = 0
         feature = "size"
 
@@ -325,6 +339,9 @@ class CSVGeneratorFromEmberJSONL:
         if sections is None:
             print("Sections not found in the JSON object")
             exit()
+
+        if len(sections) == 0:
+            return 0.0
 
         virtual_size_sum = 0
         feature = "vsize"

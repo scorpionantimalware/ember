@@ -17,3 +17,14 @@ OR
 ```bash
 python setup.py install
 ```
+
+3. [Optional] Upgrade the package.
+```bash
+pip install --upgrade .
+```
+
+OR
+
+```bash
+python setup.py install --force
+```

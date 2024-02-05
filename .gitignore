@@ -25,6 +25,13 @@
 !/scripts/classify_binaries.py
 !/scripts/init_ember.py
 
+!/csv-generator/
+!/csv-generator/setup.py
+!/csv-generator/README.md
+!/csv-generator/csv_generator_modules/
+!/csv-generator/csv_generator_modules/__init__.py
+!/csv-generator/csv_generator_modules/csv_generator_from_ember_jsonl.py
+
 !/Dockerfile
 !/INFO.md
 !/LICENSE.txt
