@@ -39,7 +39,8 @@ class CSVGeneratorFromEmberJSONL:
 
         # Remove the CSV file if it exists
         if os.path.exists(csv_file_path):
-            os.remove(csv_file_path)
+            print(f"The file {csv_file_path} already exists.")
+            exit()
 
         # Create a CSV file and write the header
         with open(csv_file_path, 'w', newline='') as csv_file:
