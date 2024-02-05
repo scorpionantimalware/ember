@@ -2,6 +2,7 @@ import os
 import json
 import csv
 from typing import List, Any
+import sys
 
 class CSVGeneratorFromEmberJSONL:
     def __init__(self, features: List[str]):
@@ -23,16 +24,19 @@ class CSVGeneratorFromEmberJSONL:
 
         self._features = features
 
-    def extract_and_generate(self, file_path):
+    def extract_and_generate(self, file_path) -> bool:
         """
         Extract the features from the JSON object and generate a CSV file.
 
         Args:
         file_path (str): Path to the JSONL file.
+
+        Returns:
+        bool: True if the CSV file is generated successfully, False otherwise.
         """
         if not self.check_file_path(file_path):
             print(f"File {file_path} not found.")
-            return
+            return False
         
         csv_file_path = os.path.splitext(file_path)[0] + '.csv'
         print(f"CSV file will be generated at {csv_file_path}")
@@ -40,7 +44,7 @@ class CSVGeneratorFromEmberJSONL:
         # Remove the CSV file if it exists
         if os.path.exists(csv_file_path):
             print(f"The file {csv_file_path} already exists.")
-            exit()
+            return False
 
         # Create a CSV file and write the header
         with open(csv_file_path, 'w', newline='') as csv_file:
@@ -57,7 +61,7 @@ class CSVGeneratorFromEmberJSONL:
                     except json.JSONDecodeError as e:
                         print(e.msg())
                         os.remove(csv_file_path)
-                        exit()
+                        return False
 
                     data = {}
 
@@ -88,12 +92,17 @@ class CSVGeneratorFromEmberJSONL:
                         if value is None:
                             print(f"Feature '{feature}' not found in the JSON object.")
                             os.remove(csv_file_path)
-                            exit()
+                            return False
 
                         if isinstance(value, dict) or isinstance(value, list):
                             print(f"Feature '{feature}' is a complex object.")
                             os.remove(csv_file_path)
-                            exit()
+                            return False
+                        
+                        if value == -1.0:
+                            print(f"Feature '{feature}' could not be extracted.")
+                            os.remove(csv_file_path)
+                            return False
 
                         data[feature] = value
 
@@ -102,6 +111,8 @@ class CSVGeneratorFromEmberJSONL:
                     i+=1
                     if i % 10000 == 0:
                         print(f"[{i}] lines processed for {file_path}")
+
+        return True
 
     def check_file_path(self, file_path) -> bool:
         """
@@ -113,10 +124,10 @@ class CSVGeneratorFromEmberJSONL:
         Returns:
         bool: True if the file exists, False otherwise.
         """
-        if os.path.exists(file_path):
-            return True
-        else:
+        if not os.path.exists(file_path):
             return False
+        
+        return True
         
     def _search_and_get(self, json_data: dict, feature: str) -> Any:
         """
@@ -143,6 +154,7 @@ class CSVGeneratorFromEmberJSONL:
                         temp_value = self._search_and_get(item, feature)
                         if temp_value is not None:
                             return temp_value
+                        
         return None
     
     def _get_sections_mean_entropy(self, json_data: dict) -> float:
@@ -153,13 +165,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Mean entropy of the sections.
+        float: Mean entropy of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         if len(sections) == 0:
             return 0.0
@@ -173,7 +185,7 @@ class CSVGeneratorFromEmberJSONL:
                 entropy_sum += value
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return entropy_sum / len(sections)
     
@@ -185,13 +197,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Minimum entropy of the sections.
+        float: Minimum entropy of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         entropy = float('inf')
         feature = "entropy"
@@ -202,7 +214,7 @@ class CSVGeneratorFromEmberJSONL:
                 entropy = min(entropy, value)
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return entropy
     
@@ -214,13 +226,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Maximum entropy of the sections.
+        float: Maximum entropy of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         entropy = float('-inf')
         feature = "entropy"
@@ -231,7 +243,7 @@ class CSVGeneratorFromEmberJSONL:
                 entropy = max(entropy, value)
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return entropy
     
@@ -243,13 +255,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Mean raw size of the sections.
+        float: Mean raw size of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         if len(sections) == 0:
             return 0.0
@@ -263,7 +275,7 @@ class CSVGeneratorFromEmberJSONL:
                 raw_size_sum += value
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return raw_size_sum / len(sections)
     
@@ -275,13 +287,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Minimum raw size of the sections.
+        float: Minimum raw size of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         raw_size = float('inf')
         feature = "size"
@@ -292,7 +304,7 @@ class CSVGeneratorFromEmberJSONL:
                 raw_size = min(raw_size, value)
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return raw_size
     
@@ -304,13 +316,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Maximum raw size of the sections.
+        float: Maximum raw size of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         raw_size = float('-inf')
         feature = "size"
@@ -321,7 +333,7 @@ class CSVGeneratorFromEmberJSONL:
                 raw_size = max(raw_size, value)
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return raw_size
     
@@ -333,13 +345,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Mean virtual size of the sections.
+        float: Mean virtual size of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         if len(sections) == 0:
             return 0.0
@@ -353,7 +365,7 @@ class CSVGeneratorFromEmberJSONL:
                 virtual_size_sum += value
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return virtual_size_sum / len(sections)
     
@@ -365,13 +377,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Minimum virtual size of the sections.
+        float: Minimum virtual size of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         virtual_size = float('inf')
         feature = "vsize"
@@ -382,7 +394,7 @@ class CSVGeneratorFromEmberJSONL:
                 virtual_size = min(virtual_size, value)
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return virtual_size
     
@@ -394,13 +406,13 @@ class CSVGeneratorFromEmberJSONL:
         json_data (dict): JSON object.
 
         Returns:
-        float: Maximum virtual size of the sections.
+        float: Maximum virtual size of the sections. -1.0 if failed.
         """
         sections = self._search_and_get(json_data, "sections")
 
         if sections is None:
             print("Sections not found in the JSON object")
-            exit()
+            return -1.0
 
         virtual_size = float('-inf')
         feature = "vsize"
@@ -411,7 +423,7 @@ class CSVGeneratorFromEmberJSONL:
                 virtual_size = max(virtual_size, value)
             else:
                 print(f"{feature} not found in the section")
-                exit()
+                return -1.0
 
         return virtual_size
 
