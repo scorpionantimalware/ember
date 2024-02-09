@@ -3,7 +3,7 @@ import json
 import csv
 from typing import List, Any
 
-class CSVGeneratorFromEmberJSONL:
+class EMBERJsonlToCSV:
     def __init__(self, features: List[str]):
         """
         EMBER dataset consists of Json Lines (.jsonl) files. Each line in the file is a JSON object.
@@ -23,7 +23,7 @@ class CSVGeneratorFromEmberJSONL:
 
         self._features = features
 
-    def extract_and_generate(self, file_path) -> bool:
+    def convert(self, file_path) -> bool:
         """
         Extract the features from the JSON object and generate a CSV file.
 
@@ -199,6 +199,9 @@ class CSVGeneratorFromEmberJSONL:
         if not status:
             print("Sections not found in the JSON object")
             return (False, None)
+        
+        if len(sections) == 0:
+            return (True, 0.0)
 
         entropy = float('inf')
         feature = "entropy"
@@ -228,6 +231,9 @@ class CSVGeneratorFromEmberJSONL:
         if not status:
             print("Sections not found in the JSON object")
             return (False, None)
+        
+        if len(sections) == 0:
+            return (True, 0.0)
 
         entropy = float('-inf')
         feature = "entropy"
@@ -289,6 +295,9 @@ class CSVGeneratorFromEmberJSONL:
         if not status:
             print("Sections not found in the JSON object")
             return (False, None)
+        
+        if len(sections) == 0:
+            return (True, 0.0)
 
         raw_size = float('inf')
         feature = "size"
@@ -318,6 +327,9 @@ class CSVGeneratorFromEmberJSONL:
         if not status:
             print("Sections not found in the JSON object")
             return (False, None)
+        
+        if len(sections) == 0:
+            return (True, 0.0)
 
         raw_size = float('-inf')
         feature = "size"
@@ -379,6 +391,9 @@ class CSVGeneratorFromEmberJSONL:
         if not status:
             print("Sections not found in the JSON object")
             return (False, None)
+        
+        if len(sections) == 0:
+            return (True, 0.0)
 
         virtual_size = float('inf')
         feature = "vsize"
@@ -408,6 +423,9 @@ class CSVGeneratorFromEmberJSONL:
         if not status:
             print("Sections not found in the JSON object")
             return (False, None)
+        
+        if len(sections) == 0:
+            return (True, 0.0)
 
         virtual_size = float('-inf')
         feature = "vsize"
@@ -426,7 +444,6 @@ def main():
     features = [
         "md5", 
         "machine", 
-        "sizeof_code", 
         "major_linker_version", 
         "minor_linker_version", 
         "sizeof_code", 
@@ -449,8 +466,8 @@ def main():
         "sections_min_virtualsize", 
         "sections_max_virtualsize"
     ]
-    g = CSVGeneratorFromEmberJSONL(features)
-    if not g.extract_and_generate("/path/to/data/ember2018/train_features_0.jsonl"):
+    g = EMBERJsonlToCSV(features)
+    if not g.convert("/path/to/data/ember2018/train_features_0.jsonl"):
         # Handle the error
         pass
 

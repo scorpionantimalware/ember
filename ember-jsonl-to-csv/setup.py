@@ -5,10 +5,10 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), encoding="UTF-8"
     readme = f.read()
 
 setup(
-    name='csv-generator-from-ember-jsonl',
+    name='ember-jsonl-to-csv',
     version='1.0.0',
-    description="CSV generator from ember jsonl file.",
+    description="Converts ember jsonl files to csv files.",
     long_description=readme,
-    packages=['csv_generator_modules'],
+    packages=['ember_jsonl_to_csv'],
     author='Saif Kandil'
 )

@@ -25,12 +25,12 @@
 !/scripts/classify_binaries.py
 !/scripts/init_ember.py
 
-!/csv-generator/
-!/csv-generator/setup.py
-!/csv-generator/README.md
-!/csv-generator/csv_generator_modules/
-!/csv-generator/csv_generator_modules/__init__.py
-!/csv-generator/csv_generator_modules/csv_generator_from_ember_jsonl.py
+!/ember-jsonl-to-csv/
+!/ember-jsonl-to-csv/setup.py
+!/ember-jsonl-to-csv/README.md
+!/ember-jsonl-to-csv/ember_jsonl_to_csv/
+!/ember-jsonl-to-csv/ember_jsonl_to_csv/__init__.py
+!/ember-jsonl-to-csv/ember_jsonl_to_csv/ember_jsonl_to_csv.py
 
 !/Dockerfile
 !/INFO.md
