@@ -85,6 +85,18 @@ class EMBERJsonlToCSV:
                             status, value = self._get_sections_min_virtual_size(json_data)
                         elif feature == "sections_max_virtualsize":
                             status, value = self._get_sections_max_virtual_size(json_data)
+                        elif feature == "debug_size":
+                            status, value = self._get_debug_size(json_data)
+                        elif feature == "debug_rva":
+                            status, value = self._get_debug_rva(json_data)
+                        elif feature == "iat_rva":
+                            status, value = self._get_iat_rva(json_data)
+                        elif feature == "export_size":
+                            status, value = self._get_export_size(json_data)
+                        elif feature == "export_rva":
+                            status, value = self._get_export_rva(json_data)
+                        elif feature == "resource_size":
+                            status, value = self._get_resource_size(json_data)
                         else:
                             status, value = self._search_and_get(json_data, feature)
 
@@ -151,6 +163,92 @@ class EMBERJsonlToCSV:
                             return (True, temp_value)
                         
         return (False, None)
+    
+
+    def _get_debug_size(self, json_data: dict)-> (bool, int):
+        status, datadirectories = self._search_and_get(json_data, "datadirectories")
+        if not status:
+            print("Datadirectories not found in the JSON object")
+            return (False, None)
+        
+        if len(datadirectories) == 0:
+            return (True, 0.0)
+        
+        debug_size = datadirectories[6]["size"]
+        return (True, debug_size)
+    
+    def _get_debug_size(self, json_data: dict)-> (bool, int):
+        status, datadirectories = self._search_and_get(json_data, "datadirectories")
+        if not status:
+            print("Datadirectories not found in the JSON object")
+            return (False, None)
+        
+        if len(datadirectories) == 0:
+            return (True, 0.0)
+        
+        debug_rva = datadirectories[6]["virtual_address"]
+        return (True, debug_rva)
+    
+    def _get_debug_rva(self, json_data: dict)-> (bool, int):
+        status, datadirectories = self._search_and_get(json_data, "datadirectories")
+        if not status:
+            print("Datadirectories not found in the JSON object")
+            return (False, None)
+        
+        if len(datadirectories) == 0:
+            return (True, 0.0)
+        
+        debug_rva = datadirectories[6]["virtual_address"]
+        return (True, debug_rva)
+    
+    def _get_iat_rva(self, json_data: dict)-> (bool, int):
+        status, datadirectories = self._search_and_get(json_data, "datadirectories")
+        if not status:
+            print("Datadirectories not found in the JSON object")
+            return (False, None)
+        
+        if len(datadirectories) == 0:
+            return (True, 0.0)
+        
+        iat_rva = datadirectories[12]["virtual_address"]
+        return (True, iat_rva)
+    
+    def _get_export_size(self, json_data: dict)-> (bool, int):
+        status, datadirectories = self._search_and_get(json_data, "datadirectories")
+        if not status:
+            print("Datadirectories not found in the JSON object")
+            return (False, None)
+        
+        if len(datadirectories) == 0:
+            return (True, 0.0)
+        
+        export_size = datadirectories[0]["size"]
+        return (True, export_size)
+
+    def _get_export_rva(self, json_data: dict)-> (bool, int):
+        status, datadirectories = self._search_and_get(json_data, "datadirectories")
+        if not status:
+            print("Datadirectories not found in the JSON object")
+            return (False, None)
+        
+        if len(datadirectories) == 0:
+            return (True, 0.0)
+        
+        export_rva = datadirectories[0]["size"]
+        return (True, export_rva)
+    
+    def _get_resource_size(self, json_data: dict)-> (bool, int):
+        status, datadirectories = self._search_and_get(json_data, "datadirectories")
+        if not status:
+            print("Datadirectories not found in the JSON object")
+            return (False, None)
+        
+        if len(datadirectories) == 0:
+            return (True, 0.0)
+        
+        resource_size = datadirectories[2]["size"]
+        return (True, resource_size)
+        
     
     def _get_sections_mean_entropy(self, json_data: dict) -> (bool, float):
         """
@@ -441,30 +539,46 @@ class EMBERJsonlToCSV:
         return (True, virtual_size)
 
 def main():
+    # features = [
+    #     "md5", 
+    #     "machine", 
+    #     "major_linker_version", 
+    #     "minor_linker_version", 
+    #     "sizeof_code", 
+    #     "major_operating_system_version", 
+    #     "minor_operating_system_version", 
+    #     "major_image_version", 
+    #     "minor_image_version", 
+    #     "major_subsystem_version", 
+    #     "minor_subsystem_version", 
+    #     "sizeof_headers", 
+    #     "subsystem", 
+    #     "sizeof_heap_commit", 
+    #     "sections_mean_entropy", 
+    #     "sections_min_entropy", 
+    #     "sections_max_entropy", 
+    #     "sections_mean_rawsize", 
+    #     "sections_min_rawsize", 
+    #     "sections_max_rawsize", 
+    #     "sections_mean_virtualsize", 
+    #     "sections_min_virtualsize", 
+    #     "sections_max_virtualsize"
+    # ]
+
     features = [
-        "md5", 
-        "machine", 
-        "major_linker_version", 
-        "minor_linker_version", 
-        "sizeof_code", 
-        "major_operating_system_version", 
-        "minor_operating_system_version", 
-        "major_image_version", 
-        "minor_image_version", 
-        "major_subsystem_version", 
-        "minor_subsystem_version", 
-        "sizeof_headers", 
-        "subsystem", 
-        "sizeof_heap_commit", 
-        "sections_mean_entropy", 
-        "sections_min_entropy", 
-        "sections_max_entropy", 
-        "sections_mean_rawsize", 
-        "sections_min_rawsize", 
-        "sections_max_rawsize", 
-        "sections_mean_virtualsize", 
-        "sections_min_virtualsize", 
-        "sections_max_virtualsize"
+        "debug_size",
+        "debug_rva",
+        "iat_rva",
+        "export_size",
+        "export_rva",
+        "resource_size",
+        "major_linker_version",
+        "minor_linker_version",
+        "major_operating_system_version",
+        "minor_operating_system_version",
+        "major_image_version",
+        "minor_image_version",
+        "exports"
     ]
     g = EMBERJsonlToCSV(features)
     if not g.convert("/path/to/data/ember2018/train_features_0.jsonl"):
